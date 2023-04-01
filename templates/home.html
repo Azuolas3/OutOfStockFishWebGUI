@@ -52,6 +52,16 @@
           board.position(game.fen())
         }
 
+        async function onChange () {
+            if (game.turn() === 'b') {
+                const encoded_fen = encodeURIComponent(game.fen())
+                const response = await fetch(`engine/${encoded_fen}`)
+                const uci_move_string = await response.json()
+                game.move(uci_move_string, {sloppy: true})
+                board.position(game.fen())
+            }
+        }
+
         function updateStatus () {
           var status = ''
 
@@ -86,11 +96,12 @@
         }
 
         var config = {
-          draggable: true,
-          position: 'start',
-          onDragStart: onDragStart,
-          onDrop: onDrop,
-          onSnapEnd: onSnapEnd
+            draggable: true,
+            position: 'start',
+            onDragStart: onDragStart,
+            onDrop: onDrop,
+            onSnapEnd: onSnapEnd,
+            onChange: onChange
         }
         board = Chessboard('board', config)
 

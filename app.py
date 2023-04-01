@@ -2,6 +2,7 @@ from flask import Flask, render_template
 import chess
 import chess.engine
 import urllib.parse
+import json
 
 app = Flask(__name__)
 
@@ -22,7 +23,7 @@ def test_engine(fen):
     board = chess.Board(decoded_fen)
     result = engine.play(board, chess.engine.Limit(time=3))
     engine.close()
-    return result.move.uci()
+    return json.dumps(result.move.uci())
 
 
 if __name__ == '__main__':
