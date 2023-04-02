@@ -1,128 +1,14 @@
+<!DOCTYPE html>
 <html lang="en">
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"
-        integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2"
-        crossorigin="anonymous"></script>
-
-    <script src="/static/js/chessboard-1.0.0.min.js"></script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.2/chess.js"></script>
-
-    <link rel="stylesheet"
-          href="/static/css/chessboard-1.0.0.min.css">
-
-    
-    <h1>HELLO</h1>
-    <div id="board" style="width: 400px"></div>
-
-    <script>
-        var board = null
-        var game = new Chess()
-        var $status = $('#status')
-        var $fen = $('#fen')
-        var $pgn = $('#pgn')
-        var playerColor = 'b'
-
-        function onDragStart (source, piece, position, orientation) {
-          // do not pick up pieces if the game is over
-          if (game.game_over()) return false
-
-          // only pick up pieces for the side to move
-          if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
-              (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
-            return false
-          }
-        }
-
-        function onDrop (source, target) {
-          // see if the move is legal
-          var move = game.move({
-            from: source,
-            to: target,
-            promotion: 'q' // NOTE: always promote to a queen for example simplicity
-          })
-
-          // illegal move
-          if (move === null) return 'snapback'
-
-          updateStatus()
-        }
-
-        // update the board position after the piece snap
-        // for castling, en passant, pawn promotion
-        function onSnapEnd () {
-          board.position(game.fen())
-        }
-
-        async function onChange () {
-            if (game.turn() !== playerColor) {
-                makeEngineMove()
-            }
-        }
-
-        async function makeEngineMove () {
-            const encoded_fen = encodeURIComponent(game.fen())
-            const response = await fetch(`engine/${encoded_fen}`)
-            const uci_move_string = await response.json()
-            game.move(uci_move_string, {sloppy: true})
-            board.position(game.fen())
-            updateStatus()
-        }
-
-        async function startGame () {
-            game = new Chess()
-            board.position(game.fen())
-            updateStatus()
-
-            if(playerColor === 'b') { // make first move if player is black
-                board.orientation('black')
-                makeEngineMove()
-            }
-        }
-
-
-        function updateStatus () {
-          var status = ''
-
-          var moveColor = 'White'
-          if (game.turn() === 'b') {
-            moveColor = 'Black'
-          }
-
-          // checkmate?
-          if (game.in_checkmate()) {
-            status = 'Game over, ' + moveColor + ' is in checkmate.'
-          }
-
-          // draw?
-          else if (game.in_draw()) {
-            status = 'Game over, drawn position'
-          }
-
-          // game still on
-          else {
-            status = moveColor + ' to move'
-
-            // check?
-            if (game.in_check()) {
-              status += ', ' + moveColor + ' is in check'
-            }
-          }
-
-          $status.html(status)
-          $fen.html(game.fen())
-          $pgn.html(game.pgn())
-        }
-
-        var config = {
-            draggable: true,
-            position: 'start',
-            onDragStart: onDragStart,
-            onDrop: onDrop,
-            onSnapEnd: onSnapEnd,
-            onChange: onChange
-        }
-        board = Chessboard('board', config)
-
-        startGame()
-    </script>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous">
+</head>
+<body>
+    <h1>Hello!</h1>
+    <a href="/game" type="button" class="btn btn-light">Play as white</a>
+    <a href="/game" type="button" class="btn btn-dark">Play as black</a>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js" integrity="sha384-qKXV1j0HvMUeCBQ+QVp7JcfGl760yU08IQ+GpUo5hlbpg51QRiuqHAJz8+BrxE/N" crossorigin="anonymous"></script>
+</body>
 </html>

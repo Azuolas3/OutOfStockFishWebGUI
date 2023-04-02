@@ -12,12 +12,16 @@ app = Flask(__name__)
 
 
 @app.route('/')
-def hello_world():  # put application's code here
+def home():  # put application's code here
     return render_template('home.html')
+
+@app.route('/game')
+def game():  # put application's code here
+    return render_template('game.html')
 
 
 @app.route('/engine/<path:fen>')
-def test_engine(fen):
+def get_engine_move(fen):
     engine = chess.engine.SimpleEngine.popen_uci("./engine/OutOfStockFish.exe")
     decoded_fen = urllib.parse.unquote(fen)
     board = chess.Board(decoded_fen)
