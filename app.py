@@ -12,12 +12,12 @@ app = Flask(__name__)
 
 
 @app.route('/')
-def home():  # put application's code here
+def home():  # home template
     return render_template('home.html')
 
-@app.route('/game')
-def game():  # put application's code here
-    return render_template('game.html')
+@app.route('/game/<string:color>')
+def game(color):
+    return render_template('game.html', color=color)
 
 
 @app.route('/engine/<path:fen>')

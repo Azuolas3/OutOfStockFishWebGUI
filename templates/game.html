@@ -20,7 +20,11 @@
         var $status = $('#status')
         var $fen = $('#fen')
         var $pgn = $('#pgn')
-        var playerColor = 'b'
+        {% if color == 'white' %}
+            var playerColor = 'w'
+        {% else %}
+            var playerColor ='b'
+        {% endif %}
 
         function onDragStart (source, piece, position, orientation) {
           // do not pick up pieces if the game is over
@@ -61,7 +65,7 @@
 
         async function makeEngineMove () {
             const encoded_fen = encodeURIComponent(game.fen())
-            const response = await fetch(`engine/${encoded_fen}`)
+            const response = await fetch(`../engine/${encoded_fen}`)
             const uci_move_string = await response.json()
             game.move(uci_move_string, {sloppy: true})
             board.position(game.fen())
