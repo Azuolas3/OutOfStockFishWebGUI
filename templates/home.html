@@ -20,6 +20,7 @@
         var $status = $('#status')
         var $fen = $('#fen')
         var $pgn = $('#pgn')
+        var playerColor = 'b'
 
         function onDragStart (source, piece, position, orientation) {
           // do not pick up pieces if the game is over
@@ -53,14 +54,31 @@
         }
 
         async function onChange () {
-            if (game.turn() === 'b') {
-                const encoded_fen = encodeURIComponent(game.fen())
-                const response = await fetch(`engine/${encoded_fen}`)
-                const uci_move_string = await response.json()
-                game.move(uci_move_string, {sloppy: true})
-                board.position(game.fen())
+            if (game.turn() !== playerColor) {
+                makeEngineMove()
             }
         }
+
+        async function makeEngineMove () {
+            const encoded_fen = encodeURIComponent(game.fen())
+            const response = await fetch(`engine/${encoded_fen}`)
+            const uci_move_string = await response.json()
+            game.move(uci_move_string, {sloppy: true})
+            board.position(game.fen())
+            updateStatus()
+        }
+
+        async function startGame () {
+            game = new Chess()
+            board.position(game.fen())
+            updateStatus()
+
+            if(playerColor === 'b') { // make first move if player is black
+                board.orientation('black')
+                makeEngineMove()
+            }
+        }
+
 
         function updateStatus () {
           var status = ''
@@ -105,6 +123,6 @@
         }
         board = Chessboard('board', config)
 
-        updateStatus()
+        startGame()
     </script>
 </html>
