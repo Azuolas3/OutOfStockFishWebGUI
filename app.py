@@ -20,12 +20,12 @@ def game(color):
     return render_template('game.html', color=color)
 
 
-@app.route('/engine/<path:fen>')
-def get_engine_move(fen):
+@app.route('/engine/<path:fen>/<int:thinking_time>')
+def get_engine_move(fen, thinking_time):
     engine = chess.engine.SimpleEngine.popen_uci("./engine/OutOfStockFish.exe")
     decoded_fen = urllib.parse.unquote(fen)
     board = chess.Board(decoded_fen)
-    result = engine.play(board, chess.engine.Limit(time=3))
+    result = engine.play(board, chess.engine.Limit(time=thinking_time))
     engine.close()
     return json.dumps(result.move.uci())
 
