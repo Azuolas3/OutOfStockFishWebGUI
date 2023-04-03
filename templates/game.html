@@ -5,8 +5,60 @@
     <title>Title</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous">
     <link rel="stylesheet" href="/static/css/chessboard-1.0.0.min.css">
+    <style>
+        #otherInput {
+            margin-top: 10px;
+        }
+
+        #timeSelectDiv {
+            margin-right: 10px;
+            margin-left: 10px;
+        }
+
+        .modal-body {
+            font-size: 17px;
+        }
+    </style>
 </head>
 <body>
+
+    <div class="modal fade show" id="gameStartModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header text-center">
+            <h5 class="modal-title w-100" id="staticBackdropLabel">Welcome to OutOfStockFish</h5>
+          </div>
+          <div class="modal-body">
+            Try to play against "OutOfStockFish", a relatively simple chess engine.
+          </div>
+          <div class="modal-body">
+            Please select which side you want to play on and choose how long you want the engine to think on every move.
+              (I'd recommend somewhere between 3-5 seconds for a good match and to not get bored
+              while waiting :) )
+          </div>
+          <div class="modal-body">
+            Good luck!
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">White</button>
+            <div id="timeSelectDiv" class="form-group">
+                <label for="timeSelect">Select thinking time (seconds)</label>
+                <select class="form-control-sm" id="timeSelect">
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                    <option>5</option>
+                    <option value="customOption">Other</option>
+                </select>
+                <input type="text" class="form-control d-none" id="otherInput">
+            </div>
+            <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Black</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <h1>Hello!</h1>
     <div id="board" style="width: 400px"></div>
 
@@ -29,6 +81,23 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js" integrity="sha384-qKXV1j0HvMUeCBQ+QVp7JcfGl760yU08IQ+GpUo5hlbpg51QRiuqHAJz8+BrxE/N" crossorigin="anonymous"></script>
 
     <script>
+        var select = document.getElementById('timeSelect');
+        var otherInput = document.getElementById('otherInput');
+
+        // add event listener to select element
+        select.addEventListener('change', function() {
+          // check if "Other" option is selected
+          if (select.value === 'customOption') {
+            // show the other input field
+            otherInput.classList.remove('d-none');
+          } else {
+            // hide the other input field
+            otherInput.classList.add('d-none');
+          }
+        });
+    </script>
+
+    <script>
         var board = null
         var game = new Chess()
         var $status = $('#status')
@@ -39,6 +108,12 @@
         {% else %}
             var playerColor ='b'
         {% endif %}
+
+        var myModal = new bootstrap.Modal(document.getElementById('gameStartModal'), {
+            keyboard: false
+        })
+
+        myModal.show()
 
         function onDragStart (source, piece, position, orientation) {
           // do not pick up pieces if the game is over
