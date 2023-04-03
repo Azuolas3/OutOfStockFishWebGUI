@@ -82,8 +82,14 @@
           } else {
             // hide the other input field
             otherInput.classList.add('d-none');
+            thinkingTime = select.value
           }
         });
+
+        otherInput.addEventListener('input', function() {
+            thinkingTime = otherInput.value
+        })
+
     </script>
 
     <script>
@@ -93,6 +99,8 @@
         var $fen = $('#fen')
         var $pgn = $('#pgn')
         var playerColor = 'w'
+        var thinkingTime = 1
+
 
         var myModal = new bootstrap.Modal(document.getElementById('gameStartModal'), {
             keyboard: false
@@ -105,8 +113,6 @@
             makeEngineMove()
             playerColor = 'b'
         })
-
-        console.log(playerColor)
 
         function onDragStart (source, piece, position, orientation) {
           // do not pick up pieces if the game is over
@@ -153,8 +159,7 @@
 
         async function makeEngineMove () {
             const encoded_fen = encodeURIComponent(game.fen())
-            const thinking_time = document.getElementById("timeSelect").value
-            const response = await fetch(`../engine/${encoded_fen}/${thinking_time}`)
+            const response = await fetch(`../engine/${encoded_fen}/${thinkingTime}`)
             const uci_move_string = await response.json()
             game.move(uci_move_string, {sloppy: true})
             board.position(game.fen())
