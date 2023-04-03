@@ -15,8 +15,10 @@
             margin-left: 10px;
         }
 
-        #newGameButton {
+        button.btn-primary {
             margin-top: 10px;
+            margin-right: 10px;
+            margin-left: 10px;
         }
 
         .modal-body {
@@ -66,7 +68,10 @@
     <div class="d-flex align-items-center justify-content-center" style="height: 100vh;">
         <div class="d-flex flex-column align-items-center">
             <div id="board" style="width: 600px"></div>
-            <button id="newGameButton" type="button" class="btn btn-primary">Start a new game</button>
+            <div class="d-flex flex-row">
+                <button id="newGameButton" type="button" class="btn btn-primary">Start a new game</button>
+                <button id="switchSidesButton" type="button" class="btn btn-primary">Switch Sides</button>
+            </div>
         </div>
     </div>
 
@@ -122,6 +127,7 @@
         })
 
         document.getElementById("newGameButton").addEventListener("click", startGame)
+        document.getElementById("switchSidesButton").addEventListener("click", switchSides)
 
         function onDragStart (source, piece, position, orientation) {
           // do not pick up pieces if the game is over
@@ -183,6 +189,21 @@
             if(playerColor === 'b') { // make first move if player is black
                 board.orientation('black')
                 makeEngineMove()
+            }
+        }
+
+        function switchSides () {
+            if(playerColor === 'w') {
+                playerColor = 'b'
+                board.orientation('black')
+                if(game.turn() === 'w')
+                    makeEngineMove()
+            }
+            else {
+                playerColor = 'w'
+                board.orientation('white')
+                if(game.turn() === 'b')
+                    makeEngineMove()
             }
         }
 
