@@ -40,7 +40,7 @@
             Good luck!
           </div>
           <div class="modal-footer justify-content-center">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">White</button>
+            <button id="white-button" type="button" class="btn btn-secondary" data-bs-dismiss="modal">White</button>
             <div id="timeSelectDiv" class="form-group">
                 <label for="timeSelect">Select thinking time (seconds)</label>
                 <select class="form-control-sm" id="timeSelect">
@@ -53,7 +53,7 @@
                 </select>
                 <input type="text" class="form-control d-none" id="otherInput">
             </div>
-            <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Black</button>
+            <button id="black-button" type="button" class="btn btn-dark" data-bs-dismiss="modal">Black</button>
           </div>
         </div>
       </div>
@@ -61,17 +61,6 @@
 
     <h1>Hello!</h1>
     <div id="board" style="width: 400px"></div>
-
-    <div class="form-group">
-        <label for="timeSelect">Select thinking time (seconds)</label>
-        <select class="form-control-sm" id="timeSelect">
-          <option>1</option>
-          <option>2</option>
-          <option>3</option>
-          <option>4</option>
-          <option>5</option>
-        </select>
-    </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"
     integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2"
@@ -103,11 +92,7 @@
         var $status = $('#status')
         var $fen = $('#fen')
         var $pgn = $('#pgn')
-        {% if color == 'white' %}
-            var playerColor = 'w'
-        {% else %}
-            var playerColor ='b'
-        {% endif %}
+        var playerColor = 'w'
 
         var myModal = new bootstrap.Modal(document.getElementById('gameStartModal'), {
             keyboard: false
@@ -115,15 +100,29 @@
 
         myModal.show()
 
+        document.getElementById("black-button").addEventListener("click", function() {
+            board.orientation('black')
+            makeEngineMove()
+            playerColor = 'b'
+        })
+
+        console.log(playerColor)
+
         function onDragStart (source, piece, position, orientation) {
           // do not pick up pieces if the game is over
-          if (game.game_over()) return false
+            if (game.game_over()) return false
+
+            if(playerColor === 'w' && piece.search(/^b/) !== -1)
+                return false
+
+            if(playerColor === 'b' && piece.search(/^w/) !== -1)
+                return false
 
           // only pick up pieces for the side to move
-          if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
-              (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
-            return false
-          }
+            if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
+                (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
+                return false
+              }
         }
 
         function onDrop (source, target) {

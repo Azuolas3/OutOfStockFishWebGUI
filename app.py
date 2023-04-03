@@ -10,14 +10,9 @@ app = Flask(__name__)
 # engine = chess.engine.SimpleEngine.popen_uci("./engine/stockfish-windows-2022-x86-64-avx2.exe")
 # engine = chess.engine.SimpleEngine.popen_uci("./engine/OutOfStockFish.exe")
 
-
 @app.route('/')
-def home():  # home template
-    return render_template('home.html')
-
-@app.route('/game/<string:color>')
-def game(color):
-    return render_template('game.html', color=color)
+def game():
+    return render_template('game.html')
 
 
 @app.route('/engine/<path:fen>/<int:thinking_time>')
